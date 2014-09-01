@@ -1,7 +1,5 @@
 # Weather
 
-#GETIP
-
 Utility to retrieve 5 day weather forecast for a location via [http://openweathermap.org/](http://openweathermap.org/)
 
 ## Usage

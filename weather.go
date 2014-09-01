@@ -2,9 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -38,23 +41,34 @@ type forecast struct {
 	List []dailyForecast
 }
 
-func main() {
-	var location string
+func extractLocation(args *[]string) (string, error) {
+	location := ""
 
 	if len(os.Args) < 2 {
-		fmt.Printf("Please provide a location for a weather forecast. E.g. $ weather london")
+		return location, errors.New("Please provide a location for a weather forecast. E.g. $ weather london")
+	}
+	for i := 1; i < len(os.Args); i++ {
+		location += os.Args[i] + " "
+	}
+	return strings.Trim(location, " "), nil
+}
+
+func main() {
+	location, err := extractLocation(&os.Args)
+
+	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
-	} else {
-		location = os.Args[1]
-		fmt.Printf("Looking up: %s\n", location)
 	}
 
-	response, err := http.Get("http://api.openweathermap.org/data/2.5/forecast/daily?mode=json&units=metric&cnt=5&q=" + location)
+	fmt.Printf("Looking up: %s\n", location)
+
+	response, err := http.Get("http://api.openweathermap.org/data/2.5/forecast/daily?mode=json&units=metric&cnt=5&q=" + url.QueryEscape(location))
 
 	defer response.Body.Close()
 
 	if err != nil {
-		fmt.Printf("Unable to retrieve data due to error: %s", err)
+		fmt.Println("Unable to retrieve data due to error: ", err)
 		response.Body.Close()
 		os.Exit(1)
 	}

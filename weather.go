@@ -53,6 +53,24 @@ func extractLocation(args *[]string) (string, error) {
 	return strings.Trim(location, " "), nil
 }
 
+func getForecast(location string) (*forecast, error) {
+	var f forecast
+
+	response, err := http.Get("http://api.openweathermap.org/data/2.5/forecast/daily?mode=json&units=metric&cnt=5&q=" + url.QueryEscape(location))
+
+	defer response.Body.Close()
+
+	if err != nil {
+		return &f, err
+	}
+
+	if err := json.NewDecoder(response.Body).Decode(&f); err != nil {
+		return &f, err
+	}
+
+	return &f, nil
+}
+
 func main() {
 	location, err := extractLocation(&os.Args)
 
@@ -63,20 +81,10 @@ func main() {
 
 	fmt.Printf("Looking up: %s\n", location)
 
-	response, err := http.Get("http://api.openweathermap.org/data/2.5/forecast/daily?mode=json&units=metric&cnt=5&q=" + url.QueryEscape(location))
-
-	defer response.Body.Close()
+	f, err := getForecast(location)
 
 	if err != nil {
 		fmt.Println("Unable to retrieve data due to error: ", err)
-		response.Body.Close()
-		os.Exit(1)
-	}
-
-	var f forecast
-
-	if err := json.NewDecoder(response.Body).Decode(&f); err != nil {
-		fmt.Printf("Unable to parse result due to error: %s", err)
 		os.Exit(1)
 	}
 

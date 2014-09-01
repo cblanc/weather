@@ -71,6 +71,18 @@ func getForecast(location string) (*forecast, error) {
 	return &f, nil
 }
 
+func prettyPrintForecast(f *forecast) {
+	fmt.Printf("5 day forecast for %s (%.5f, %.5f)\n\n", f.City.Name, f.City.Coord.Lon, f.City.Coord.Lat)
+
+	for _, daily := range f.List {
+		fmt.Printf("Date: %s\n", time.Unix(daily.Dt, 0).Format(time.RFC850))
+		fmt.Printf("Description: %s (%s)\n", daily.Weather[0].Main, daily.Weather[0].Description)
+		fmt.Printf("Temperate (Range): %0.fC (%.0fC-%.0fC)\n", daily.Temp.Day, daily.Temp.Min, daily.Temp.Max)
+		fmt.Printf("Cloud Coverage: %d%%\n", daily.Clouds)
+		fmt.Printf("\n")
+	}
+}
+
 func main() {
 	location, err := extractLocation(&os.Args)
 
@@ -88,15 +100,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("5 day forecast for %s (%.5f, %.5f)\n\n", f.City.Name, f.City.Coord.Lon, f.City.Coord.Lat)
-
-	for _, daily := range f.List {
-		fmt.Printf("Date: %s\n", time.Unix(daily.Dt, 0).Format(time.RFC850))
-		fmt.Printf("Description: %s (%s)\n", daily.Weather[0].Main, daily.Weather[0].Description)
-		fmt.Printf("Temperate (Range): %0.fC (%.0fC-%.0fC)\n", daily.Temp.Day, daily.Temp.Min, daily.Temp.Max)
-		fmt.Printf("Cloud Coverage: %d%%\n", daily.Clouds)
-		fmt.Printf("\n")
-	}
+	prettyPrintForecast(f)
 
 	os.Exit(0)
 

@@ -14,4 +14,8 @@ $ weather london
 or
 
 $ weather london,uk
+
+or 
+
+$ weather kuala lumpur
 ```

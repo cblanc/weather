@@ -83,12 +83,16 @@ func prettyPrintForecast(f *forecast) {
 	}
 }
 
+func logError(err error) {
+	fmt.Println(err)
+	os.Exit(1)
+}
+
 func main() {
 	location, err := extractLocation(&os.Args)
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		logError(err)
 	}
 
 	fmt.Printf("Looking up: %s\n", location)
@@ -96,8 +100,7 @@ func main() {
 	f, err := getForecast(location)
 
 	if err != nil {
-		fmt.Println("Unable to retrieve data due to error: ", err)
-		os.Exit(1)
+		logError(err)
 	}
 
 	prettyPrintForecast(f)

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/olekukonko/tablewriter"
 	"net/http"
 	"net/url"
 	"os"
@@ -72,15 +73,25 @@ func getForecast(location string) (*forecast, error) {
 }
 
 func prettyPrintForecast(f *forecast) {
-	fmt.Printf("5 day forecast for %s (%.5f, %.5f)\n\n", f.City.Name, f.City.Coord.Lon, f.City.Coord.Lat)
+	fmt.Printf("\n5 day forecast for %s (%.5f, %.5f)\n\n", f.City.Name, f.City.Coord.Lon, f.City.Coord.Lat)
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Day", "Forecast", "Temp (Range)", "Cloud Coverage (%)", "Wind Speed (m/s)", "Humidity (%)"})
+
+	layout := "Monday, 01/02"
 
 	for _, daily := range f.List {
-		fmt.Printf("Date: %s\n", time.Unix(daily.Dt, 0).Format(time.RFC850))
-		fmt.Printf("Description: %s (%s)\n", daily.Weather[0].Main, daily.Weather[0].Description)
-		fmt.Printf("Temperate (Range): %0.fC (%.0fC-%.0fC)\n", daily.Temp.Day, daily.Temp.Min, daily.Temp.Max)
-		fmt.Printf("Cloud Coverage: %d%%\n", daily.Clouds)
-		fmt.Printf("\n")
+		data := []string{}
+		data = append(data, time.Unix(daily.Dt, 0).Format(layout))
+		data = append(data, fmt.Sprintf("%s (%s)", daily.Weather[0].Main, daily.Weather[0].Description))
+		data = append(data, fmt.Sprintf("%0.fC (%.0fC-%.0fC)\n", daily.Temp.Day, daily.Temp.Min, daily.Temp.Max))
+		data = append(data, fmt.Sprintf("%d%%", daily.Clouds))
+		data = append(data, fmt.Sprintf("%0.1f", daily.Speed))
+		data = append(data, fmt.Sprintf("%d", daily.Humidity))
+		table.Append(data)
 	}
+
+	table.Render()
 }
 
 func logError(err error) {
@@ -95,8 +106,6 @@ func main() {
 		logError(err)
 	}
 
-	fmt.Printf("Looking up: %s\n", location)
-
 	f, err := getForecast(location)
 
 	if err != nil {
@@ -106,5 +115,4 @@ func main() {
 	prettyPrintForecast(f)
 
 	os.Exit(0)
-
 }

@@ -74,7 +74,7 @@ func getForecast(location string) (*forecast, error) {
 }
 
 func prettyPrintForecast(f *forecast) {
-	fmt.Printf("\n5 day forecast for %s, %s (%.5f, %.5f)\n\n", f.City.Name, f.City.Country, f.City.Coord.Lon, f.City.Coord.Lat)
+	fmt.Printf("\n5 day forecast for %s, %s (%.5f, %.5f)\n\n", f.City.Name, f.City.Country, f.City.Coord.Lat, f.City.Coord.Lon)
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Day", "Forecast", "Temp (Range)", "Cloud Coverage (%)", "Wind Speed (m/s)", "Humidity (%)"})

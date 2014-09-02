@@ -19,7 +19,7 @@ $ weather new york
 ```
 
 ```
-5 day forecast for New York, US (-74.00597, 40.71427)
+5 day forecast for New York, US (40.71427, -74.00597)
 
 +------------------+------------------------+----------------+--------------------+------------------+--------------+
 |       DAY        |        FORECAST        |  TEMP (RANGE)  | CLOUD COVERAGE (%) | WIND SPEED (M/S) | HUMIDITY (%) |

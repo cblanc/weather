@@ -42,14 +42,14 @@ type forecast struct {
 	List []dailyForecast
 }
 
-func extractLocation(args *[]string) (string, error) {
+func extractLocation(args []string) (string, error) {
 	location := ""
 
-	if len(os.Args) < 2 {
+	if len(args) < 2 {
 		return location, errors.New("Please provide a location for a weather forecast. E.g. $ weather london")
 	}
-	for i := 1; i < len(os.Args); i++ {
-		location += os.Args[i] + " "
+	for i := 1; i < len(args); i++ {
+		location += args[i] + " "
 	}
 	return strings.Trim(location, " "), nil
 }
@@ -100,7 +100,7 @@ func logError(err error) {
 }
 
 func main() {
-	location, err := extractLocation(&os.Args)
+	location, err := extractLocation(os.Args)
 
 	if err != nil {
 		logError(err)
